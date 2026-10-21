@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+/* Dark palette is still the base (:root), with an explicit light theme under html.light —
+   QBV offers a light/dark switch, and its audience (older
+   professors and lecturers) strongly prefers light mode, so light is the DEFAULT (see the
+   no-flash script in layout.tsx). The light palette is tuned for readability: near-black
+   text, generous contrast, and slightly stronger borders/shadows so cards stay visibly
+   separated on paper. */
+:root {
+  color-scheme: dark;
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --surface: 0 0% 100% / 0.03;
+  --surface-strong: 0 0% 100% / 0.06;
+  --border: 0 0% 100% / 0.08;
+  --border-strong: 0 0% 100% / 0.14;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  /* Slightly deeper than the classic indigo/purple so white button text on the
+     accent gradient stays >= 4.5:1 in dark mode (the same gradient at 67%/65%
+     measured ~4.1:1). Visually identical hue, one notch more saturation. */
+  --indigo: 239 84% 62%;
+  --purple: 271 91% 60%;
+  --radius-lg: 1.5rem;
+  --radius-md: 0.85rem;
+  --radius-sm: 0.5rem;
+}
+
+html.light {
+  color-scheme: light;
+  /* Light mode is tuned for QBV's older audience: a warm paper background (less
+     glare than cool white), a slight bump to the base font size, and looser
+     line-height — rem-based Tailwind sizes scale with it proportionally. */
+  font-size: 106.25%; /* 16px -> 17px */
+  line-height: 1.6;
+  --background: 40 22% 96%;
+  --foreground: 40 12% 14%;
+  --card: 40 30% 99%;
+  --card-foreground: 40 12% 14%;
+  --surface: 0 0% 100% / 0.88;
+  --surface-strong: 0 0% 0% / 0.05;
+  --border: 40 12% 82%;
+  --border-strong: 40 12% 62%;
+  --muted: 40 16% 90%;
+  --muted-foreground: 40 11% 32%;
+  --accent: 40 16% 90%;
+  --accent-foreground: 40 12% 14%;
+  --destructive: 0 68% 40%;
+  /* Slightly deeper indigo/purple so white text on the gradient and text-indigo
+     accents both keep >= 4.5:1 contrast on the light background. */
+  --indigo: 243 72% 52%;
+  --purple: 271 78% 54%;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-surface: hsl(var(--surface));
+  --color-surface-strong: hsl(var(--surface-strong));
+  --color-border: hsl(var(--border));
+  --color-border-strong: hsl(var(--border-strong));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-indigo: hsl(var(--indigo));
+  --color-purple: hsl(var(--purple));
+  --radius-lg: var(--radius-lg);
+  --radius-md: var(--radius-md);
+  --radius-sm: var(--radius-sm);
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* Brand glow: one fixed, very low-alpha indigo/purple wash behind the whole app.
+     Same idea in both themes — the light version is fainter so it never fights the
+     paper background. pointer-events irrelevant (background layer), cheap to paint. */
+  background-image:
+    radial-gradient(52rem 26rem at 50% -10rem, hsl(var(--indigo) / 0.13), transparent 70%),
+    radial-gradient(44rem 24rem at 105% 112%, hsl(var(--purple) / 0.09), transparent 70%);
+  background-attachment: fixed;
+}
+
+html.light body {
+  background-image:
+    radial-gradient(52rem 26rem at 50% -10rem, hsl(var(--indigo) / 0.08), transparent 70%),
+    radial-gradient(44rem 24rem at 105% 112%, hsl(var(--purple) / 0.06), transparent 70%);
+}
+
+/* Visible focus ring everywhere — important for keyboard users and older eyes.
+   Invisible to mouse users, but Tab/arrow-key navigation now shows clearly
+   where focus is in both themes. */
+:focus-visible {
+  outline: 2px solid hsl(var(--indigo));
+  outline-offset: 2px;
+}
+
+::selection {
+  background: hsl(var(--indigo) / 0.3);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, hsl(var(--indigo)), hsl(var(--purple)));
+}
+
+.glass-card {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  backdrop-filter: blur(10px);
+}
+
+/* On paper-white, the translucent glass surface alone doesn't separate cards —
+   a warm, soft shadow keeps them clearly delineated for older eyes. */
+html.light .glass-card {
+  box-shadow:
+    0 1px 2px rgb(60 40 10 / 0.06),
+    0 8px 28px rgb(60 40 10 / 0.09);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Light mode: a slightly darker thumb so the scrollbar stays easy to find on paper. */
+html.light ::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.45);
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.65);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 hsl(var(--indigo) / 0.5); }
+  100% { box-shadow: 0 0 0 14px hsl(var(--indigo) / 0); }
+}
+.recording-pulse {
+  animation: pulse-ring 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* Live "equalizer" bars next to status text while recording or searching. Bars are
+   currentColor so they inherit the indigo text accent; delays are set inline per bar. */
+@keyframes eq-bounce {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar {
+  width: 3px;
+  border-radius: 999px;
+  background: currentColor;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+/* Results / content entrance: transform+opacity only, short, staggered via inline delay. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+  animation: rise-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recording-pulse,
+  .eq-bar,
+  .rise-in {
+    animation: none !important;
+  }
+}

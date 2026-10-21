@@ -1,0 +1,24 @@
+# dependencies and build output
+node_modules/
+frontend/.next/
+frontend/out/
+
+# secrets and runtime state
+.env*
+!.env.local.example
+frontend/data/
+
+# backend: environment, large assets (not part of the source code) and runtime files
+backend/.venv/
+backend/.cache/
+backend/models/
+backend/data/
+backend/hf-cache/
+backend/logs/
+__pycache__/
+*.py[cod]
+*.log
+
+# OS
+.DS_Store
+

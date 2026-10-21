@@ -1,0 +1,33 @@
+# Python requirements of the Q-SFX backend (backend/). The frontend's Node packages are in package.json.
+# Install with:  backend/scripts/setup_env.sh   (creates backend/.venv and installs this file)
+# or by hand:    python3 -m venv backend/.venv && backend/.venv/bin/pip install -r requirements.txt
+# Versions are the ones the production backend ran with (Python 3, NVIDIA driver with CUDA 13).
+
+# PyTorch from the CUDA 13.0 wheel index; every other package comes from PyPI.
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch==2.13.0
+torchaudio==2.11.0
+torchvision==0.28.0
+
+# Models: MATPAC++ and BEATs twins + HuBERT-base head (D1), Whisper large-v3-turbo, Audio Flamingo 3 (4-bit)
+transformers==5.13.1       # 5.x is required for the native `audioflamingo3` model class
+tokenizers==0.22.2
+safetensors==0.8.0
+huggingface_hub==1.23.0
+accelerate==1.14.0
+bitsandbytes==0.49.2       # 4-bit nf4 quantisation of Audio Flamingo 3 (fits next to everything in 12 GB)
+
+# Audio and numerics
+librosa==0.11.0
+soundfile==0.14.0
+numba==0.66.0
+numpy==2.4.6
+scipy==1.18.0
+pandas==3.0.3
+scikit-learn==1.9.1        # TF-IDF of the Whisper-transcript route
+tqdm==4.68.4
+PyYAML==6.0.3
+
+# Service
+fastapi==0.121.2
+uvicorn[standard]==0.40.0

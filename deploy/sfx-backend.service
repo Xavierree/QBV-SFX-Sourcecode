@@ -1,0 +1,24 @@
+# Starts the Q-SFX backend (port 8500, localhost only) at boot and restarts it after a crash.
+# Install (edit User and the paths first):
+#   sudo cp deploy/sfx-backend.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now sfx-backend
+[Unit]
+Description=Q-SFX inference backend (FastAPI, port 8500)
+After=network.target nvidia-persistenced.service
+Wants=nvidia-persistenced.service
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/path/to/QBV-Sourcecode/backend
+# Keep the pid file that scripts/stop_server.sh uses.
+ExecStart=/bin/bash -c 'echo $$$$ > logs/server.pid; exec .venv/bin/python server/main.py'
+StandardOutput=append:/path/to/QBV-Sourcecode/backend/logs/server.log
+StandardError=append:/path/to/QBV-Sourcecode/backend/logs/server.log
+# Restart after a crash; a clean stop (SIGTERM from stop_server.sh) stays stopped.
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

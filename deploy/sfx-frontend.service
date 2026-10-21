@@ -1,0 +1,22 @@
+# Runs the Q-SFX frontend (Next.js, http://localhost:3000). Build first: cd frontend && npm run build
+# Install (edit User and the paths first):
+#   sudo cp deploy/sfx-frontend.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now sfx-frontend
+[Unit]
+Description=Q-SFX frontend (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/path/to/QBV-Sourcecode/frontend
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+EnvironmentFile=/path/to/QBV-Sourcecode/frontend/.env.local
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
