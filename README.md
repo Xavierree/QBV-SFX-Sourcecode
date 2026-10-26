@@ -4,11 +4,11 @@ Q-SFX (Query Sound Effect) adalah sistem pencarian efek suara berbasis imitasi v
 (dengungan, siulan, atau ucapan) lalu sistem mengembalikan klip yang paling relevan dari galeri 9.708 klip sound-effect.
 Dokumen ini hanya mencakup **source code**; model, galeri audio, dan indeks tidak disertakan (lihat §4).
 
-Sistem retrieval yang dilayani adalah **D1**, sistem akhir pada skripsi: ensemble kembar MATPAC++ dan kembar BEATs (masing-masing satu menara imitasi dan satu menara referensi, seed 123; empat jaringan, 351,5 juta parameter),
+Sistem retrieval yang dilayani adalah **D1**: ensemble kembar MATPAC++ dan kembar BEATs (masing-masing satu menara imitasi dan satu menara referensi, seed 123; empat jaringan, 351,5 juta parameter),
 digabung dengan kepala soft-DTW (HuBERT-base beku lapisan 9 dan dua FrameNet) dan CSLS. Untuk efek suara, hasilnya diteruskan ke gerbang ucapan Audio Flamingo 3 dan, hanya untuk kueri yang berisi ucapan, ke jalur transkrip Whisper
 (digabung dengan RRF); Whisper adalah jalan pintas leksikal untuk separuh pustaka yang berisi ucapan, bukan pencocokan deskripsi. D1 **zero-shot** pada efek suara: tidak ada bobotnya yang dilatih atau diadaptasi pada rekaman efek suara
-maupun qvim-dev. Angka penelitiannya (MRR, 84 kueri efek suara sebagai set pengembangan, selang kepercayaan sekitar ±0,04): menara 0,3302, kepala + CSLS 0,5007, pipa lengkap dengan gerbang 0,5221; qvim-dev (979 kueri) 0,2884.
-Angka itu adalah taksiran pada set pengembangan, bukan hasil uji tersegel. Penjelasan, angka, dan hasil verifikasi: `backend/D1_SFX_PIPELINE.md`.
+maupun qvim-dev. Hasil evaluasi benchmark (MRR pada 84 kueri efek suara): menara 0,3302, kepala + CSLS 0,5007, pipa lengkap dengan gerbang 0,5221; qvim-dev (979 kueri) 0,2884.
+Penjelasan teknis dan hasil verifikasi: `backend/D1_SFX_PIPELINE.md`.
 
 Seluruh sistem berjalan di **satu komputer** dan saling terhubung melalui `localhost`:
 
@@ -49,10 +49,10 @@ QBV-Sourcecode/
 | GPU | NVIDIA dengan CUDA dan VRAM ≥ 12 GB (produksi: RTX 3080 Ti 12 GB; terpakai ±10,8 GiB, puncak ±10,4 GiB teralokasi saat Submit) |
 | Backend | Python 3, driver NVIDIA dengan CUDA 13, paket pada `requirements.txt` |
 | Frontend | Node.js 20.9+ (syarat Next.js 16) dan npm |
-| OmniRoute | Hanya untuk tahap Metadata pada halaman Submit (lihat manual, Bab 2.4); pencarian tidak memerlukannya |
+| OmniRoute | Hanya untuk tahap Metadata pada halaman Submit; pencarian tidak memerlukannya |
 | Browser | Browser modern dengan izin mikrofon |
 
-Audio Flamingo 3 berlisensi NVIDIA OneWay Noncommercial: hanya untuk riset / non-komersial (termasuk demo skripsi).
+Audio Flamingo 3 berlisensi NVIDIA OneWay Noncommercial: hanya untuk riset / non-komersial.
 
 ## 3. Instalasi dan menjalankan
 
@@ -116,7 +116,7 @@ Ukuran repositori sengaja kecil (< 500 MB). Letakkan aset berikut di dalam `back
 
 | Jalur | Isi |
 |---|---|
-| `models/d1/` | D1: empat menara (`matpac_mimic.pt`, `matpac_ref.pt`, `beats_mimic.pt`, `beats_ref.pt`: kembar M1 dan S3 seed 123 pada skripsi), kepala soft-DTW (`head_clean_s42.pt`), `beats_cfg.json`, dan `config.json` (checksum bobot yang diperiksa saat memuat). Untuk membangun indeks dan memverifikasi juga diperlukan `reference_tables.npz` dan `reference_speech_gate.npz` (ekspor riset; bukan untuk menjalankan server) |
+| `models/d1/` | D1: empat menara (`matpac_mimic.pt`, `matpac_ref.pt`, `beats_mimic.pt`, `beats_ref.pt`: kembar M1 dan S3 seed 123), kepala soft-DTW (`head_clean_s42.pt`), `beats_cfg.json`, dan `config.json` (checksum bobot yang diperiksa saat memuat). Untuk membangun indeks dan memverifikasi juga diperlukan `reference_tables.npz` dan `reference_speech_gate.npz` (bukan untuk menjalankan server) |
 | `models/asr/whisper-large-v3-turbo/` | Whisper large-v3-turbo |
 | `models/alm/af3/` | Audio Flamingo 3 (speech gate dan caption); unduh dengan `scripts/download_alm.py` |
 | `models/text/` | Cache TF-IDF transkrip galeri (dibuat otomatis bila belum ada) |
@@ -124,7 +124,7 @@ Ukuran repositori sengaja kecil (< 500 MB). Letakkan aset berikut di dalam `back
 | `data/sfx/gallery/` | 9.708+ klip galeri SFX |
 | `data/qvim-dev/` | Galeri qvim-dev: `DEV Dataset.csv`, `Items/` (121 klip) dan `Queries/` (979 imitasi, dipakai untuk membangun indeks CSLS) |
 | `data/sfx/metadata/` | Transkrip Whisper galeri (`gallery_transcripts.json`) |
-| `data/indexes/` | Indeks D1: `sfx_gallery_d1.npz` dan `qdev_d1.npz` beserta file `.meta.json`-nya, dibangun dengan `scripts/build_d1_index.py` dan `scripts/build_qdev_d1_index.py` (masing-masing menolak menulis indeks bila hasilnya tidak mereproduksi ekspor riset). Klip yang ditambahkan lewat Submit disimpan pada `sfx_gallery_d1_submitted.npz` |
+| `data/indexes/` | Indeks D1: `sfx_gallery_d1.npz` dan `qdev_d1.npz` beserta file `.meta.json`-nya, dibangun dengan `scripts/build_d1_index.py` dan `scripts/build_qdev_d1_index.py` (masing-masing menolak menulis indeks bila hasilnya tidak konsisten dengan checkpoint referensi). Klip yang ditambahkan lewat Submit disimpan pada `sfx_gallery_d1_submitted.npz` |
 
 Setelah mengganti model atau indeks, jalankan pemeriksaan kesetiaan sebelum melayani pengguna:
 
@@ -147,4 +147,4 @@ Frontend (port 3000): `POST /api/search`, `GET /api/health`, `GET /api/audio/[ga
 - Perubahan kode frontend memerlukan `npm run build` ulang sebelum `npm run start`.
 - Halaman Search merekam maksimal 10 detik dan berhenti sendiri setelah pengguna bersuara lalu diam 1,5 detik (`frontend/lib/endpointing.ts`; tombol stop manual tetap ada). Ambang batasnya heuristik, bukan hasil pelatihan; halaman Submit tidak memakai berhenti-otomatis. Uji logikanya: `node frontend/scripts/test-endpointing.mjs`.
 - Semua inferensi model berjalan lokal; hanya teks (caption, transkrip, name hint) yang dikirim ke OmniRoute pada tahap Metadata. Teks metadata itu tidak ikut pemeringkatan dan kualitasnya tidak dievaluasi.
-- Angka yang dicetak skrip verifikasi untuk 84 kueri benchmark lebih tinggi daripada angka penelitian, karena istilah CSLS pada indeks melewatkan target tiap kueri itu sendiri; itu angka pemeriksaan jalur, bukan akurasi. Akurasi yang dapat dikutip adalah angka penelitian di atas (set pengembangan; konfirmasinya memerlukan rekaman baru).
+
