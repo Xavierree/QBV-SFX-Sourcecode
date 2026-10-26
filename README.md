@@ -48,7 +48,7 @@ QBV-Sourcecode/
 |---|---|
 | GPU | NVIDIA dengan CUDA dan VRAM ≥ 12 GB (produksi: RTX 3080 Ti 12 GB; terpakai ±10,8 GiB, puncak ±10,4 GiB teralokasi saat Submit) |
 | Backend | Python 3, driver NVIDIA dengan CUDA 13, paket pada `requirements.txt` |
-| Frontend | Node.js 18+ dan npm |
+| Frontend | Node.js 20.9+ (syarat Next.js 16) dan npm |
 | OmniRoute | Hanya untuk tahap Metadata pada halaman Submit (lihat manual, Bab 2.4); pencarian tidak memerlukannya |
 | Browser | Browser modern dengan izin mikrofon |
 
