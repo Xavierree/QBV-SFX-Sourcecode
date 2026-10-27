@@ -1,5 +1,5 @@
 # Python requirements of the Q-SFX backend (backend/). The frontend's Node packages are in package.json.
-# Install with:  backend/scripts/setup_env.sh   (creates backend/.venv and installs this file)
+# Install with:  ./install.sh  or  backend/scripts/setup_env.sh   (creates backend/.venv and installs this file)
 # or by hand:    python3 -m venv backend/.venv && backend/.venv/bin/pip install -r requirements.txt
 # Versions are the ones the production backend ran with (Python 3, NVIDIA driver with CUDA 13).
 

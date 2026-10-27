@@ -27,6 +27,7 @@ Frontend ──(teks saja)──► OmniRoute (http://localhost:20128/v1)  ← h
 QBV-Sourcecode/
 ├── README.md                  dokumen ini
 ├── requirements.txt           dependensi Python backend
+├── install.sh / .ps1          instalasi satu perintah (backend venv + frontend npm)
 ├── start-all.sh / .ps1        menjalankan backend lalu frontend sekaligus (Linux/macOS / Windows PowerShell)
 ├── package.json               workspace Node.js (frontend)
 ├── backend/                   layanan GPU (Python / FastAPI)
@@ -56,15 +57,24 @@ Audio Flamingo 3 berlisensi NVIDIA OneWay Noncommercial: hanya untuk riset / non
 
 ## 3. Instalasi dan menjalankan
 
-Cara tercepat (setelah `backend/scripts/setup_env.sh` dan aset pada §4 tersedia): `./start-all.sh` (Linux/macOS) atau
-`.\start-all.ps1` (Windows PowerShell). Skrip ini menjalankan backend di latar belakang, memasang paket Node dan
-membangun frontend bila belum ada, lalu menjalankan frontend di http://localhost:3000. Skrip `.ps1` belum diuji di Windows.
+Ukuran unduhan repositori ini sangat ringan (< 20 MB, sekitar ~1 MB) karena dependensi diunduh dan dipasang sendiri oleh pengguna ke lingkungan lokal.
+
+### 3.1 Instalasi Cepat (Semua Dependensi)
+
+Untuk memasang virtual environment Python dan paket backend, sekaligus paket Node.js frontend:
+
+```bash
+./install.sh        # Linux / macOS
+.\install.ps1       # Windows PowerShell
+```
+
+Atau langsung jalankan `./start-all.sh` (Linux/macOS) atau `.\start-all.ps1` (Windows PowerShell), yang akan otomatis menyiapkan virtual environment dan paket bila belum terpasang.
 
 Jika model/data belum ada, backend **tidak dijalankan**: `scripts/run_server.sh` (dan `python3 server/main.py`) mencetak
 daftar file yang hilang dan berhenti (`python3 backend/scripts/check_assets.py` menampilkan daftar yang sama).
 Frontend tetap dapat berjalan, tetapi titik status di /admin menampilkan *down* dan pencarian mengembalikan error 502/503.
 
-### 3.1 Backend
+### 3.2 Backend Manual
 
 ```bash
 cd backend
@@ -81,7 +91,7 @@ Backend hanya mendengarkan `127.0.0.1:8500` (tidak dapat diakses dari luar kompu
 Agar backend hidup otomatis saat komputer menyala: sunting `deploy/sfx-backend.service` (User dan path), lalu
 `sudo cp deploy/sfx-backend.service /etc/systemd/system/ && sudo systemctl enable --now sfx-backend`.
 
-### 3.2 Frontend
+### 3.3 Frontend Manual
 
 ```bash
 npm install                                   # dari root repositori

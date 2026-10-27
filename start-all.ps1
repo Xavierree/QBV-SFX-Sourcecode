@@ -3,7 +3,10 @@
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 
-if (-not (Test-Path backend\.venv\Scripts\python.exe)) { Write-Error 'no backend\.venv yet: run backend\scripts\setup_env.ps1 first' }
+if (-not (Test-Path backend\.venv\Scripts\python.exe)) {
+    Write-Host "backend\.venv not found. Setting up backend environment..."
+    & backend\scripts\setup_env.ps1
+}
 $port = if ($env:SFXDEPLOY_PORT) { $env:SFXDEPLOY_PORT } else { '8500' }
 if ($env:SFXDEPLOY_PORT -and -not $env:INFERENCE_URL) { $env:INFERENCE_URL = "http://127.0.0.1:$port" }   # frontend follows a non-default port
 & backend\scripts\run_server.ps1
